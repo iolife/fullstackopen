@@ -19,57 +19,63 @@ const App = () => {
   const onChangeFilterHandle = (event) => {
     setFilterName(event.target.value)
   }
+  const setErrorNotification = (error) => {
+    setMessageStyle("error")
+    setMessage(error.response.data.error)
+    setTimeout(() => setMessage(null), 2000)
+  }
+  const setSucessfulNotification = (message) => {
+    setMessageStyle("successful")
+    setMessage(`update ${message} successful`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 2000);
+  }
+
   const deleteHandle = (name, id) => {
     if (window.confirm(`Delete ${name}`)) {
-      personService.deletePerson(id).catch((error) => {
-        setMessageStyle("error")
-        setMessage(`Person '${name}' was already removed from server`)
-        setTimeout(() => setMessage(null), 2000)
+      personService.deletePerson(id).then(() => {
+        setSucessfulNotification(name)
+      }).catch((error) => {
+        setErrorNotification(error)
       })
-      setPersons(persons.filter((e) => { return e.id !== id }))
-      setMessageStyle("successful")
-      setMessage(`Person '${name}' is already removed from server`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 2000);
+      personService
+        .getAll()
+        .then(initialPerson => setPersons(initialPerson))
+        .catch(error => setErrorNotification(error))
     }
   }
+
   const addPersons = (event) => {
     event.preventDefault()
-    if (newName === "") {
-      alert("name is null")
-      return
-    }
     const index = persons.findIndex(e => e.name === newName)
     if (index >= 0) {
       const newObj = { ...persons[index], number: newNumber }
       personService.put(newObj.id, newObj).then((d) => {
-        setPersons(persons.map((e) => { return e.name === newName ? newObj : e }))
+        setSucessfulNotification(newName)
+        personService
+          .getAll()
+          .then(initialPerson => setPersons(initialPerson))
+          .catch(error => setErrorNotification(error))
+      }).catch((error) => {
+        setErrorNotification(error)
       })
-      setMessageStyle("successful")
-      setMessage(`update ${newName} successful`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 2000);
+
       return
     }
     const newPerson = { name: newName, number: newNumber }
     personService.create(newPerson)
-      .then((createPerson) => {
-        setPersons(persons.concat(createPerson));
+      .then(() => {
         setNewName("")
-      }).catch(() => {
-        setMessage(`add ${newName} faild`)
-        setMessageStyle("error")
-        setTimeout(() => {
-          setMessage(null)
-        }, 2000);
+        setNewNumber("")
+        setSucessfulNotification(newName)
+        personService
+          .getAll()
+          .then(data => setPersons(data))
+          .catch(error => setErrorNotification(error))
+      }).catch((error) => {
+        setErrorNotification(error)
       })
-    setMessage(`add ${newName} successful`)
-    setMessageStyle("successful")
-    setTimeout(() => {
-      setMessage(null)
-    }, 2000);
     return
   }
   const notesToShow = filterName ? persons.filter(e => e.name === filterName) : persons
