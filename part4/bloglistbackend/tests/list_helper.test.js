@@ -172,8 +172,6 @@ describe("favorite blog", () => {
     const result = listHelper.favoriteBlog(listWithZeroBlog)
     expect(result).toEqual({})
   })
-<<<<<<< HEAD
-=======
 })
 
 describe("most blog", () => {
@@ -345,5 +343,4 @@ describe("most likes", () => {
     const result = listHelper.mostLikes(listWithZeroBlog)
     expect(result).toEqual({})
   })
->>>>>>> 55142bc (add list_helper)
 })
