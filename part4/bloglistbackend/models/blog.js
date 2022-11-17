@@ -1,16 +1,11 @@
-require("dotenv").config()
-const logger = require("../utils/logger")
+
 const mongoose = require("mongoose")
 const blogSchema = new mongoose.Schema({
-  title: String,
+  title: { type: String, required: true },
   author: String,
-  url: String,
-  likes: Number
+  url: { type: String, required: true },
+  likes: { type: Number, default: 0 }
 })
-
-const mongoUrl = process.env.MONGODB_URL
-mongoose.connect(mongoUrl).then(() => logger.info("conneted to mongo"))
-  .catch(error => logger.error(error.message))
 blogSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
