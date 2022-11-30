@@ -1,12 +1,21 @@
-const AddBlog = (
-  { handleAddBlog,
-    title, handleTitleChange,
-    author, hanleAuthorChange,
-    url, handleUrlChange }
+import { useState } from 'react'
+
+const BlogForm = (
+  { createBlog }
 ) => {
+  const addBlog = async (event) => {
+    event.preventDefault()
+    createBlog({ title, author, url })
+  }
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const handleTitleChange = ({ target }) => setTitle(target.value)
+  const hanleAuthorChange = ({ target }) => setAuthor(target.value)
+  const handleUrlChange = ({ target }) => setUrl(target.value)
   return (<>
     <h2>create new blog</h2>
-    <form onSubmit={handleAddBlog}>
+    <form onSubmit={addBlog}>
       <div>
         title
         <input
@@ -39,4 +48,4 @@ const AddBlog = (
 
   )
 }
-export default AddBlog
+export default BlogForm
